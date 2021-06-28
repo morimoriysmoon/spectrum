@@ -66,9 +66,39 @@ input.spectrum.with-add-on {
     top:0;
     left:0;
     bottom:0;
-    right:20px !important;
+    right:20px;
 }
 .sp-hue {
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width: 12px;
+    height: 100%;
+    left: initial !important;
+}
+
+.sp-white {
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width: 12px;
+    height: 100%;
+    left: initial !important;
+}
+
+.sp-amber {
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width: 12px;
+    height: 100%;
+    left: initial !important;
+}
+
+.sp-uv {
     position: absolute;
     top:0;
     right:0;
@@ -206,6 +236,33 @@ input.spectrum.with-add-on {
     background: linear-gradient(to bottom, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%);
 }
 
+.sp-white {
+    background: -moz-linear-gradient(top, #000000 0%, #ffffff 100%);
+    background: -ms-linear-gradient(top, #000000 0%, #ffffff 100%);
+    background: -o-linear-gradient(top, #000000 0%, #ffffff 100%);
+    background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#ffffff));
+    background: -webkit-linear-gradient(top, #000000 0%, #ffffff 100%);
+    background: linear-gradient(to bottom, #000000 0%, #ffffff 100%);
+}
+
+.sp-amber {
+    background: -moz-linear-gradient(top, #000000 0%, #ffbf00 100%);
+    background: -ms-linear-gradient(top, #000000 0%, #ffbf00 100%);
+    background: -o-linear-gradient(top, #000000 0%, #ffbf00 100%);
+    background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#ffbf00));
+    background: -webkit-linear-gradient(top, #000000 0%, #ffbf00 100%);
+    background: linear-gradient(to bottom, #000000 0%, #ffbf00 100%);
+}
+
+.sp-uv {
+    background: -moz-linear-gradient(top, #000000 0%, #8f00ff 100%);
+    background: -ms-linear-gradient(top, #000000 0%, #8f00ff 100%);
+    background: -o-linear-gradient(top, #000000 0%, #8f00ff 100%);
+    background: -webkit-gradient(linear, left top, left bottom, from(#000000), to(#8f00ff));
+    background: -webkit-linear-gradient(top, #000000 0%, #8f00ff 100%);
+    background: linear-gradient(to bottom, #000000 0%, #8f00ff 100%);
+}
+
 /* IE filters do not support multiple color stops.
    Generate 6 divs, line them up, and do two color gradients for each.
    Yes, really.
@@ -290,7 +347,7 @@ Here are the basic themeable display options (colors, fonts, global widths)
     color: black;
     box-shadow: 0 0 0 1px rgba(99,114,130,.16), 0 8px 16px rgba(27,39,51,.08);
 }
-.sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear {
+.sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear, .sp-white, .sp-amber, .sp-uv {
     font-size:12px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -300,7 +357,7 @@ Here are the basic themeable display options (colors, fonts, global widths)
 .sp-top {
     margin-bottom: 10px;
 }
-.sp-color, .sp-hue, .sp-clear, .sp-val, .sp-sat {
+.sp-color, .sp-hue, .sp-clear, .sp-val, .sp-sat, .sp-white, .sp-amber, .sp-uv {
     border-radius: 3px;
 }
 

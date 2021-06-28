@@ -71,6 +71,11 @@ function updateColorPickerAndJavascriptCode() {
     hljs.highlightBlock($('pre#sp-options')[0]);
 
     colorpickerInput.spectrum(options);
+    colorpickerInput.on('move.spectrum', function(e, tinycolor, aux) {
+        console.info('move.spectrum called');
+        console.info(tinycolor);
+        console.info(aux);
+    });    
 }
 // ----- END CONFIGURATOR -----
 
