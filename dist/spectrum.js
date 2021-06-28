@@ -628,8 +628,8 @@
             paletteContainer.on(paletteEvent, ".sp-thumb-el", paletteElementClick);
             initialColorContainer.on(paletteEvent, ".sp-thumb-el:nth-child(1)", { ignore: true }, paletteElementClick);
 
-            function locateSlides() {
-                // positon : hue - white - amber - uv
+            function relocateSlidesAnd() {
+                // fixed position : hue - white - amber - uv
                 var nextToHue = 0;
                 if (showWhite) nextToHue++;
                 if (showAmber) nextToHue++;
@@ -648,10 +648,12 @@
                 $('.sp-white').css("right", nextToWhite*20 + "px");
                 $('.sp-amber').css("right", nextToAmber*20 + "px");
 
-                $('.sp-fill').css("padding-top", (80 - nextToHue*6) + "%")
+                $('.sp-clear-enabled .sp-clear').css("right", nextToHue*20 + "px");
+
+                $('.sp-fill').css("padding-top", (80 - nextToHue*7) + "%")
             }
 
-            locateSlides();
+            relocateSlidesAnd();
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -984,13 +986,13 @@
 
             // add aux color info.
             if (showWhite) { // White, Amber and UV
-                displayColor += ',w[' + Math.floor(currentWhite*100) + '%]';
+                displayColor += ',W[' + Math.floor(currentWhite*100) + '%]';
             }
             if (showAmber) {
-                displayColor += ',a[' + Math.floor(currentAmber*100) + '%]';
+                displayColor += ',A[' + Math.floor(currentAmber*100) + '%]';
             }
             if (showUV) {
-                displayColor += ',uv[' + Math.floor(currentUV*100) + '%]';
+                displayColor += ',UV[' + Math.floor(currentUV*100) + '%]';
             }
 
             // Update the text entry input as it changes happen
