@@ -64,7 +64,12 @@
         ],
         selectionPalette: [],
         disabled: false,
-        offset: null
+        offset: null,
+
+        showWhite: true,
+        showAmber: true,
+        showUV: true,
+        showColorTemp: true
     },
     spectrums = [],
     IE = !!/msie/i.exec( window.navigator.userAgent ),
@@ -119,6 +124,18 @@
                             "<div class='sp-hue'>",
                                 "<div class='sp-slider'></div>",
                                 gradientFix,
+                            "</div>",
+                            "<div class='sp-white'>",
+                                "<div class='sp-slider'></div>",
+                            "</div>",
+                            "<div class='sp-amber'>",
+                                "<div class='sp-slider'></div>",
+                            "</div>",
+                            "<div class='sp-uv'>",
+                                "<div class='sp-slider'></div>",
+                            "</div>",
+                            "<div class='sp-colortemp'>",
+                                "<div class='sp-slider'></div>",
                             "</div>",
                         "</div>",
                         "<div class='sp-alpha'><div class='sp-alpha-inner'><div class='sp-alpha-handle'></div></div></div>",
@@ -196,8 +213,10 @@
             dragWidth = 0,
             dragHeight = 0,
             dragHelperHeight = 0,
+
             slideHeight = 0,
             slideWidth = 0,
+
             alphaWidth = 0,
             alphaSlideHelperWidth = 0,
             slideHelperHeight = 0,
@@ -205,6 +224,12 @@
             currentSaturation = 0,
             currentValue = 0,
             currentAlpha = 1,
+
+            currentWhite = 0,
+            currentAmber = 0,
+            currentUV = 0,
+            currentColorTemp = 0,
+
             palette = [],
             paletteArray = [],
             paletteLookup = {},
@@ -212,7 +237,12 @@
             maxSelectionSize = opts.maxSelectionSize,
             draggingClass = "sp-dragging",
             abortNextInputChange = false,
-            shiftMovementDirection = null;
+            shiftMovementDirection = null,
+            
+            showWhite =  opts.showWhite,
+            showAmber = opts.showAmber,
+            showUV = opts.showUV,
+            showColorTemp = opts.showColorTemp;
 
         var doc = element.ownerDocument,
             body = doc.body,
@@ -222,8 +252,22 @@
             pickerContainer = container.find(".sp-picker-container"),
             dragger = container.find(".sp-color"),
             dragHelper = container.find(".sp-dragger"),
+
             slider = container.find(".sp-hue"),
-            slideHelper = container.find(".sp-slider"),
+            slideHelper = container.find(".sp-hue .sp-slider"),
+
+            sliderWhite = container.find(".sp-white"),
+            slideWhiteHelper = container.find(".sp-white .sp-slider"),
+
+            sliderAmber = container.find(".sp-amber"),
+            slideAmberHelper = container.find(".sp-amber .sp-slider"),
+
+            sliderUV = container.find(".sp-uv"),
+            slideUVHelper = container.find(".sp-uv .sp-slider"),
+
+            sliderColorTemp = container.find(".sp-colortemp"),
+            slideColorTempHelper = container.find(".sp-colortemp .sp-slider"),
+
             alphaSliderInner = container.find(".sp-alpha-inner"),
             alphaSlider = container.find(".sp-alpha"),
             alphaSlideHelper = container.find(".sp-alpha-handle"),
@@ -302,6 +346,38 @@
             container.toggleClass("sp-palette-only", opts.showPaletteOnly);
             container.toggleClass("sp-initial-disabled", !opts.showInitial);
             container.addClass(opts.className).addClass(opts.containerClassName);
+
+            if (showWhite) {
+                sliderWhite.show();
+                slideWhiteHelper.show();
+            } else {
+                sliderWhite.hide();
+                slideWhiteHelper.hide();
+            }
+
+            if (showAmber) {
+                sliderAmber.show();
+                slideAmberHelper.show();
+            } else {
+                sliderAmber.hide();
+                slideAmberHelper.hide();
+            }
+
+            if (showUV) {
+                sliderUV.show();
+                slideUVHelper.show();
+            } else {
+                sliderUV.hide();
+                slideUVHelper.hide();
+            }
+
+            if (showColorTemp) {
+                sliderColorTemp.show();
+                slideColorTempHelper.show();
+            } else {
+                sliderColorTemp.hide();
+                slideColorTempHelper.hide();
+            }            
 
             reflow();
         }
@@ -464,6 +540,42 @@
                 move();
             }, dragStart, dragStop);
 
+            draggable(sliderWhite, function (dragX, dragY) {
+                currentWhite = parseFloat(dragY / slideHeight);
+                isEmpty = false;
+                if (!opts.showAlpha) {
+                    currentAlpha = 1;
+                }
+                move();
+            }, dragStart, dragStop);
+
+            draggable(sliderAmber, function (dragX, dragY) {
+                currentAmber = parseFloat(dragY / slideHeight);
+                isEmpty = false;
+                if (!opts.showAlpha) {
+                    currentAlpha = 1;
+                }
+                move();
+            }, dragStart, dragStop);
+
+            draggable(sliderUV, function (dragX, dragY) {
+                currentUV = parseFloat(dragY / slideHeight);
+                isEmpty = false;
+                if (!opts.showAlpha) {
+                    currentAlpha = 1;
+                }
+                move();
+            }, dragStart, dragStop);
+
+            draggable(sliderColorTemp, function (dragX, dragY) {
+                currentColorTemp = parseFloat(dragY / slideHeight);
+                isEmpty = false;
+                if (!opts.showAlpha) {
+                    currentAlpha = 1;
+                }
+                move();
+            }, dragStart, dragStop);            
+
             draggable(dragger, function (dragX, dragY, e) {
 
                 // shift+drag should snap the movement to either the x or y axis.
@@ -541,6 +653,43 @@
             var paletteEvent = IE ? "mousedown.spectrum" : "click.spectrum touchstart.spectrum";
             paletteContainer.on(paletteEvent, ".sp-thumb-el", paletteElementClick);
             initialColorContainer.on(paletteEvent, ".sp-thumb-el:nth-child(1)", { ignore: true }, paletteElementClick);
+
+            function relocateSlidesAnd() {
+                // fixed position : hue - white - amber - uv - colorTemp
+                var nextToHue = 0;
+                if (showWhite) nextToHue++;
+                if (showAmber) nextToHue++;
+                if (showUV) nextToHue++;
+                if (showColorTemp) nextToHue++;
+
+                var nextToWhite = 0;
+                if (showAmber) nextToWhite++;
+                if (showUV) nextToWhite++;
+                if (showColorTemp) nextToWhite++;
+
+                var nextToAmber = 0;
+                if (showUV) nextToAmber++;
+                if (showColorTemp) nextToAmber++;
+
+                var nextToUV = 0;
+                if (showColorTemp) nextToUV++;
+
+                $(pickerContainer).css("width", 200 + nextToHue*20 + "px");
+                $(dragger).css("right", 20 + nextToHue*20 + "px");
+                $(slider).css("right", nextToHue*20 + "px");
+                $(sliderWhite).css("right", nextToWhite*20 + "px");
+                $(sliderAmber).css("right", nextToAmber*20 + "px");
+                $(sliderUV).css("right", nextToUV*20 + "px");
+
+                // var sp_clear = container.find('.sp-clear-enabled .sp-clear');
+                var sp_clear = container.find('.sp-clear');
+                $(sp_clear).css("right", nextToHue*20 + "px");
+
+                var sp_fill = container.find('.sp-fill');
+                $(sp_fill).css("padding-top", (80 - nextToHue*5) + "%");
+            }
+
+            relocateSlidesAnd();
         }
 
         function updateSelectionPaletteFromStorage() {
@@ -799,8 +948,13 @@
         function move() {
             updateUI();
 
-            callbacks.move(get());
-            boundElement.trigger('move.spectrum', [ get() ]);
+            var kTemp = 1000 + Math.floor(11000*currentColorTemp);
+            var aux = { white: currentWhite, amber: currentAmber, uv: currentUV, colorTemp: kTemp };
+
+            callbacks.move([ get(), aux ]);
+            boundElement.trigger('move.spectrum', [ get(),  aux]);
+
+            // console.info([ get(), { white: currentWhite, amber: currentAmber, uv: currentUV, colorTemp: currentColorTemp } ]);
         }
 
         function updateUI() {
@@ -867,6 +1021,21 @@
                 displayColor = realColor.toString(format);
             }
 
+            // add aux color info.
+            if (showWhite) { // White, Amber, UV and Color temperature(kelvin)
+                displayColor += ',W[' + Math.floor(currentWhite*100) + '%]';
+            }
+            if (showAmber) {
+                displayColor += ',A[' + Math.floor(currentAmber*100) + '%]';
+            }
+            if (showUV) {
+                displayColor += ',UV[' + Math.floor(currentUV*100) + '%]';
+            }
+            if (showColorTemp) {
+                var kTemp = 1000 + Math.floor(11000*currentColorTemp);
+                displayColor += ',K[' + kTemp + ']';
+            }
+
             // Update the text entry input as it changes happen
             if (opts.showInput) {
                 textInput.val(displayColor);
@@ -906,6 +1075,27 @@
                 slideHelper.show();
                 dragHelper.show();
 
+                if (showWhite) {
+                    slideWhiteHelper.show();
+                } else {
+                    slideWhiteHelper.hide();
+                }
+                if (showAmber) {
+                    slideAmberHelper.show();
+                } else { 
+                    slideAmberHelper.hide();
+                }
+                if (showUV) {
+                    slideUVHelper.show();
+                } else {
+                    slideUVHelper.hide();
+                }
+                if (showColorTemp) {
+                    slideColorTempHelper.show();
+                } else {
+                    slideColorTempHelper.hide();
+                }
+                 
                 // Where to show the little circle in that displays your current selected color
                 var dragX = s * dragWidth;
                 var dragY = dragHeight - (v * dragHeight);
@@ -932,6 +1122,30 @@
                 slideHelper.css({
                     "top": (slideY - slideHelperHeight) + "px"
                 });
+
+                // White
+                slideY = (currentWhite) * slideHeight;
+                slideWhiteHelper.css({
+                    "top": (slideY - slideHelperHeight) + "px"
+                });
+
+                // Amber
+                slideY = (currentAmber) * slideHeight;
+                slideAmberHelper.css({
+                    "top": (slideY - slideHelperHeight) + "px"
+                });
+
+                // UV
+                slideY = (currentUV) * slideHeight;
+                slideUVHelper.css({
+                    "top": (slideY - slideHelperHeight) + "px"
+                });
+
+                // Color temperature
+                slideY = (currentColorTemp) * slideHeight;
+                slideColorTempHelper.css({
+                    "top": (slideY - slideHelperHeight) + "px"
+                });                
             }
         }
 

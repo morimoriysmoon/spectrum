@@ -88,7 +88,8 @@ module.exports = function(grunt) {
   grunt.registerTask('travis', 'test');
 
   // Default task.
-  grunt.registerTask('default', ['test']);
+  // grunt.registerTask('default', ['test']);
+  grunt.registerTask('default', ['build']);
 
   //Build Task.
   grunt.registerTask('build', ['jshint', 'concat', 'uglify', 'cssmin']);

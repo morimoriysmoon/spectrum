@@ -108,6 +108,16 @@ input.spectrum.with-add-on {
     left: initial !important;
 }
 
+.sp-colortemp {
+    position: absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    width: 12px;
+    height: 100%;
+    left: initial !important;
+}
+
 .sp-clear-enabled .sp-hue {
     top: 15%;
     height: 85%;
@@ -263,6 +273,15 @@ input.spectrum.with-add-on {
     background: linear-gradient(to bottom, #000000 0%, #8f00ff 100%);
 }
 
+.sp-colortemp {
+    background: -moz-linear-gradient(top, #ff0000 0%, #ffcf9d 25%,#ffffff 50%, #cfffff 75%, #bacfff 100%);
+    background: -ms-linear-gradient(top, #ff0000 0%, #ffcf9d 25%,#ffffff 50%, #cfffff 75%, #bacfff 100%);
+    background: -o-linear-gradient(top, #ff0000 0%, #ffcf9d 25%,#ffffff 50%, #cfffff 75%, #bacfff 100%);
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff0000), color-stop(0.25, #ffcf9d), color-stop(0.50, #ffffff), color-stop(0.75, #cfffff), to(#bacfff));
+    background: -webkit-linear-gradient(top, #ff0000 0%, #ffcf9d 25%,#ffffff 50%, #cfffff 75%, #bacfff 100%);
+    background: linear-gradient(to bottom, #ff0000 0%, #ffcf9d 25%,#ffffff 50%, #cfffff 75%, #bacfff 100%);
+}
+
 /* IE filters do not support multiple color stops.
    Generate 6 divs, line them up, and do two color gradients for each.
    Yes, really.
@@ -347,7 +366,7 @@ Here are the basic themeable display options (colors, fonts, global widths)
     color: black;
     box-shadow: 0 0 0 1px rgba(99,114,130,.16), 0 8px 16px rgba(27,39,51,.08);
 }
-.sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear, .sp-white, .sp-amber, .sp-uv {
+.sp-container, .sp-container button, .sp-container input, .sp-color, .sp-hue, .sp-clear, .sp-white, .sp-amber, .sp-uv, .sp-colortemp {
     font-size:12px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -357,7 +376,7 @@ Here are the basic themeable display options (colors, fonts, global widths)
 .sp-top {
     margin-bottom: 10px;
 }
-.sp-color, .sp-hue, .sp-clear, .sp-val, .sp-sat, .sp-white, .sp-amber, .sp-uv {
+.sp-color, .sp-hue, .sp-clear, .sp-val, .sp-sat, .sp-white, .sp-amber, .sp-uv, .sp-colortemp {
     border-radius: 3px;
 }
 
