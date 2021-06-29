@@ -974,18 +974,23 @@
                 switch(channel) {
                     case 'k':
                         currentColorTemp = (value-1000) / 11000;
+                        currentColorTemp = (currentColorTemp < 0 ? 0 : (currentColorTemp > 1 ? 1 : currentColorTemp));
                         break;
                     case 'w':
                         currentWhite = value / 100;
+                        currentWhite = (currentWhite < 0 ? 0 : (currentWhite > 1 ? 1 : currentWhite));
                         break;
                     case 'a':
                         currentAmber = value / 100;
+                        currentAmber = (currentAmber < 0 ? 0 : (currentAmber > 1 ? 1 : currentAmber));
                         break;
                     case 'u':
                         currentUV = value / 100;
+                        currentUV = (currentUV < 0 ? 0 : (currentUV > 1 ? 1 : currentUV));
                         break;
                     case 'i':
                         currentInfrared = value / 100;
+                        currentInfrared = (currentInfrared < 0 ? 0 : (currentInfrared > 1 ? 1 : currentInfrared));
                         break;
                     default:
                         break;
