@@ -969,8 +969,57 @@
         }
 
         function setWithChannels(colorSpaceString) {
-            // get color format
-            // get channels
+
+            function setValueOfChannel(channel, value) {
+                switch(channel) {
+                    case 'k':
+                        currentColorTemp = (value-1000) / 11000;
+                        break;
+                    case 'w':
+                        currentWhite = value / 100;
+                        break;
+                    case 'a':
+                        currentAmber = value / 100;
+                        break;
+                    case 'u':
+                        currentUV = value / 100;
+                        break;
+                    case 'i':
+                        currentInfrared = value / 100;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // get color format anc compare
+            var colorspace = colorSpaceString.substr(0, colorSpaceString.indexOf('('));
+            if (colorspace !== formatWithChannels) {
+                throw new Error('color space does not match');
+            }
+
+            var channels = formatWithChannels.substr(3);
+
+            var valuesString = colorSpaceString.substr(colorSpaceString.indexOf('(')+1, colorSpaceString.indexOf(')')-colorSpaceString.indexOf('(')-1);
+            var values = valuesString.split(',');
+
+            // update channels first
+            if (channels && channels.length > 0) {
+                for (var idx = 0 ; idx < channels.length ; idx++) {
+                    setValueOfChannel(channels.charAt(idx), parseFloat(values[3 + idx]));
+                }
+            }
+
+            // then update color
+            if (formatWithChannels.startsWith('rgb')) {
+                set(['rgb', Math.ceil(values[0]*255/100), Math.ceil(values[1]*255/100), Math.ceil(values[2]*255/100)].join(' '));
+            } else if (formatWithChannels.startsWith('hsv') || formatWithChannels.startsWith('hsb')) {
+                set(['hsv', values[0], values[1]/100, values[2]/100].join(' '));
+            } else if (formatWithChannels.startsWith('hsl')) {
+                set(['hsl', values[0], values[1]/100, values[2]/100].join(' '));
+            } else {
+                throw new Error('Color space not supported: ' + colorSpaceString);
+            }
         }
 
         function get(opts) {
@@ -1360,6 +1409,10 @@
             offset: setOffset,
             set: function (c) {
                 set(c);
+                updateOriginalInput();
+            },
+            setWithChannels: function(str) {
+                setWithChannels(str);
                 updateOriginalInput();
             },
             get: get,

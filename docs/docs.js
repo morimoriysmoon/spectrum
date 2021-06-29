@@ -32,6 +32,8 @@ $('.configurator-renderer input.test').spectrum({
         // console.info(args[1]);
     }
 });
+$('.configurator-renderer input.test').show();
+$('.configurator-renderer input.test').spectrum("setWithChannels", "rgbkwaui(50,50,50,6000,50,50,50,50)");
 $('.configurator-renderer input.test').on('move.spectrum', function (e, colorSpace) {
     console.info(colorSpace);
 })
