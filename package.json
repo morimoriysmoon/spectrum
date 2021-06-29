@@ -21,7 +21,7 @@
         "email": "sebastian.castro@protonmail.com"
     },
     "scripts": {
-        "run-grunt": "node_modules/.bin/grunt"
+        "run-grunt": "node_modules/.bin/grunt build"
     },    
     "devDependencies": {
         "grunt": "~1.0.4",

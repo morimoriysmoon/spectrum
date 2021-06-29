@@ -19,7 +19,23 @@ $('#toc').toc({
 });
 
 // ----- CONFIGURATOR -----
-$('.configurator-renderer input').spectrum();
+$('.configurator-renderer input.org').spectrum();
+
+$('.configurator-renderer input.test').spectrum({
+    type: 'text',
+    formatWithChannels: 'rgbkwaui',
+    allowEmpty: false,
+    showAlpha: false,
+    showButtons: false,
+    move: function(args) {
+        // console.info(args[0]);
+        // console.info(args[1]);
+    }
+});
+$('.configurator-renderer input.test').on('move.spectrum', function (e, colorSpace) {
+    console.info(colorSpace);
+})
+
 var colorpickerInput = $("#color-picker");
 
 initConfigurator();

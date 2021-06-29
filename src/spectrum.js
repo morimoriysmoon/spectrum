@@ -66,10 +66,7 @@
         disabled: false,
         offset: null,
 
-        showWhite: true,
-        showAmber: true,
-        showUV: true,
-        showColorTemp: true
+        formatWithChannels: '', // E.g.> rgb(hsv or hsl) + [kwaui]+
     },
     spectrums = [],
     IE = !!/msie/i.exec( window.navigator.userAgent ),
@@ -135,6 +132,9 @@
                                 "<div class='sp-slider'></div>",
                             "</div>",
                             "<div class='sp-colortemp'>",
+                                "<div class='sp-slider'></div>",
+                            "</div>",
+                            "<div class='sp-infrared'>",
                                 "<div class='sp-slider'></div>",
                             "</div>",
                         "</div>",
@@ -229,6 +229,7 @@
             currentAmber = 0,
             currentUV = 0,
             currentColorTemp = 0,
+            currentInfrared = 0,
 
             palette = [],
             paletteArray = [],
@@ -239,10 +240,12 @@
             abortNextInputChange = false,
             shiftMovementDirection = null,
             
-            showWhite =  opts.showWhite,
-            showAmber = opts.showAmber,
-            showUV = opts.showUV,
-            showColorTemp = opts.showColorTemp;
+            formatWithChannels = opts.formatWithChannels,
+            showWhite = formatWithChannels.indexOf('w') > -1 ? true : false,
+            showAmber = formatWithChannels.indexOf('a') > -1 ? true : false,
+            showUV = formatWithChannels.indexOf('u') > -1 ? true : false,
+            showColorTemp = formatWithChannels.indexOf('k') > -1 ? true : false,
+            showInfrared = formatWithChannels.indexOf('i') > -1 ? true : false;
 
         var doc = element.ownerDocument,
             body = doc.body,
@@ -267,6 +270,9 @@
 
             sliderColorTemp = container.find(".sp-colortemp"),
             slideColorTempHelper = container.find(".sp-colortemp .sp-slider"),
+
+            sliderInfrared = container.find(".sp-infrared"),
+            slideInfraredHelper = container.find(".sp-infrared .sp-slider"),
 
             alphaSliderInner = container.find(".sp-alpha-inner"),
             alphaSlider = container.find(".sp-alpha"),
@@ -377,7 +383,15 @@
             } else {
                 sliderColorTemp.hide();
                 slideColorTempHelper.hide();
-            }            
+            }
+
+            if (showInfrared) {
+                sliderInfrared.show();
+                slideInfraredHelper.show();
+            } else {
+                sliderInfrared.hide();
+                slideInfraredHelper.hide();
+            }
 
             reflow();
         }
@@ -574,7 +588,16 @@
                     currentAlpha = 1;
                 }
                 move();
-            }, dragStart, dragStop);            
+            }, dragStart, dragStop);
+
+            draggable(sliderInfrared, function (dragX, dragY) {
+                currentInfrared = parseFloat(dragY / slideHeight);
+                isEmpty = false;
+                if (!opts.showAlpha) {
+                    currentAlpha = 1;
+                }
+                move();
+            }, dragStart, dragStop);
 
             draggable(dragger, function (dragX, dragY, e) {
 
@@ -655,31 +678,50 @@
             initialColorContainer.on(paletteEvent, ".sp-thumb-el:nth-child(1)", { ignore: true }, paletteElementClick);
 
             function relocateSlidesAnd() {
-                // fixed position : hue - white - amber - uv - colorTemp
+                // fixed position : hue - colorTemp(k) - white(w) - amber(a) - uv(u) - Infrared(i)
                 var nextToHue = 0;
-                if (showWhite) nextToHue++;
-                if (showAmber) nextToHue++;
-                if (showUV) nextToHue++;
-                if (showColorTemp) nextToHue++;
-
+                var nextToColorTemp = 0;
                 var nextToWhite = 0;
-                if (showAmber) nextToWhite++;
-                if (showUV) nextToWhite++;
-                if (showColorTemp) nextToWhite++;
-
                 var nextToAmber = 0;
-                if (showUV) nextToAmber++;
-                if (showColorTemp) nextToAmber++;
-
                 var nextToUV = 0;
-                if (showColorTemp) nextToUV++;
 
+                if (showColorTemp) {
+                    nextToHue++;
+                }
+
+                if (showWhite) { 
+                    nextToHue++;
+                    nextToColorTemp++;
+                }
+
+                if (showAmber) { 
+                    nextToHue++;
+                    nextToColorTemp++;
+                    nextToWhite++;
+                }
+
+                if (showUV) { 
+                    nextToHue++;
+                    nextToColorTemp++;
+                    nextToWhite++;
+                    nextToAmber++;
+                }
+
+                if (showInfrared) {
+                    nextToHue++;
+                    nextToColorTemp++;
+                    nextToWhite++;
+                    nextToAmber++;
+                    nextToUV++;
+                }
+                
                 $(pickerContainer).css("width", 200 + nextToHue*20 + "px");
                 $(dragger).css("right", 20 + nextToHue*20 + "px");
                 $(slider).css("right", nextToHue*20 + "px");
                 $(sliderWhite).css("right", nextToWhite*20 + "px");
                 $(sliderAmber).css("right", nextToAmber*20 + "px");
                 $(sliderUV).css("right", nextToUV*20 + "px");
+                $(sliderColorTemp).css("right", nextToColorTemp*20 + "px");
 
                 // var sp_clear = container.find('.sp-clear-enabled .sp-clear');
                 var sp_clear = container.find('.sp-clear');
@@ -926,6 +968,11 @@
             }
         }
 
+        function setWithChannels(colorSpaceString) {
+            // get color format
+            // get channels
+        }
+
         function get(opts) {
             opts = opts || { };
 
@@ -945,16 +992,68 @@
             return !textInput.hasClass("sp-validation-error");
         }
 
+        function getColorSpaceString(tinycolor) {
+            /**
+             * 
+            RGB model:
+                r - RED (0.0 - 100.0% clamped)
+                g - GREEN (0.0 - 100.0% clamped)
+                b - BLUE (0.0 - 100.0% clamped)
+            
+            HSB/V model (typically light):
+                h - HUE (mod 360 degrees)
+                s - SATURATION (0.0 - 100.0% clamped)
+                b/v - BRIGHTNESS (0.0 - 100.0% clamped)
+                
+            HSL model (typically paint):
+                h - HUE (mod 360 degrees)
+                s - SATURATION (0.0 - 100.0% clamped)
+                l - LIGHTNESS (0.0 - 100.0% clamped)
+            
+            Additional modifiers / channel parts:
+                k - COLOUR TEMP (typically 1500 - 9000 clamped max 65535)
+                w - WHITE channel (0 - 100% clamped)
+                a - AMBER channel (0 - 100% clamped)
+                u - U/V channel (0 - 100% clamped)
+                i - INFRARED channel (0 - 100% clamped)
+             */
+
+            var values = [];
+
+            function getChannelsValue(values) {
+                if (showColorTemp) values.push(1000 + Math.floor(11000*currentColorTemp)); // Kelvin
+                if (showWhite) values.push(currentWhite*100); // number, %
+                if (showAmber) values.push(currentAmber*100); // number, %
+                if (showUV) values.push(currentUV*100); // number, %
+                if (showInfrared) values.push(currentInfrared*100); // number, %
+            }
+
+            if (formatWithChannels.startsWith('rgb')) {
+                values.push(tinycolor.toRgb()['r']*100/255); // number, %
+                values.push(tinycolor.toRgb()['g']*100/255); // number, %
+                values.push(tinycolor.toRgb()['b']*100/255); // number, %
+            } else if (formatWithChannels.startsWith('hsv') || formatWithChannels.startsWith('hsb')) {
+                values.push(tinycolor.toHsv()['h']%360); // number, degree
+                values.push(tinycolor.toHsv()['s']*100); // number, %
+                values.push(tinycolor.toHsv()['v']*100); // number, %
+            } else if (formatWithChannels.startsWith('hsl')) {
+                values.push(tinycolor.toHsl()['h']%360); // number, degree
+                values.push(tinycolor.toHsl()['s']*100); // number, %
+                values.push(tinycolor.toHsl()['l']*100); // number, %
+            } else {
+                return 'Unknown format: ' + formatWithChannels;
+            }
+            getChannelsValue(values);
+            values = values.map(function(el) { return Math.floor(el); });
+            return formatWithChannels + '(' + values.join(',') + ')';
+        }
+
         function move() {
             updateUI();
 
-            var kTemp = 1000 + Math.floor(11000*currentColorTemp);
-            var aux = { white: currentWhite, amber: currentAmber, uv: currentUV, colorTemp: kTemp };
-
-            callbacks.move([ get(), aux ]);
-            boundElement.trigger('move.spectrum', [ get(),  aux]);
-
-            // console.info([ get(), { white: currentWhite, amber: currentAmber, uv: currentUV, colorTemp: currentColorTemp } ]);
+            var colorSpaceString = getColorSpaceString(get());
+            callbacks.move(colorSpaceString);
+            boundElement.trigger('move.spectrum', [ colorSpaceString ]); // return separated parameters
         }
 
         function updateUI() {
@@ -1021,20 +1120,7 @@
                 displayColor = realColor.toString(format);
             }
 
-            // add aux color info.
-            if (showWhite) { // White, Amber, UV and Color temperature(kelvin)
-                displayColor += ',W[' + Math.floor(currentWhite*100) + '%]';
-            }
-            if (showAmber) {
-                displayColor += ',A[' + Math.floor(currentAmber*100) + '%]';
-            }
-            if (showUV) {
-                displayColor += ',UV[' + Math.floor(currentUV*100) + '%]';
-            }
-            if (showColorTemp) {
-                var kTemp = 1000 + Math.floor(11000*currentColorTemp);
-                displayColor += ',K[' + kTemp + ']';
-            }
+            displayColor = getColorSpaceString(get());
 
             // Update the text entry input as it changes happen
             if (opts.showInput) {
@@ -1095,6 +1181,11 @@
                 } else {
                     slideColorTempHelper.hide();
                 }
+                if (showInfrared) {
+                    slideInfraredHelper.show();
+                } else {
+                    slideInfraredHelper.hide();
+                }                
                  
                 // Where to show the little circle in that displays your current selected color
                 var dragX = s * dragWidth;
@@ -1144,6 +1235,12 @@
                 // Color temperature
                 slideY = (currentColorTemp) * slideHeight;
                 slideColorTempHelper.css({
+                    "top": (slideY - slideHelperHeight) + "px"
+                });
+
+                // Infrared
+                slideY = (currentInfrared) * slideHeight;
+                slideInfraredHelper.css({
                     "top": (slideY - slideHelperHeight) + "px"
                 });                
             }
