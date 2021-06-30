@@ -20,10 +20,10 @@ $('#toc').toc({
 
 // ----- CONFIGURATOR -----
 $('.configurator-renderer input.org').spectrum();
-
 $('.configurator-renderer input.test').spectrum({
     type: 'text',
-    formatWithChannels: 'rgbkwaui',
+    theme: 'sp-dark',
+    formatWithChannels: 'hsvkwaui',
     allowEmpty: false,
     showAlpha: false,
     showButtons: false,
@@ -33,7 +33,7 @@ $('.configurator-renderer input.test').spectrum({
     }
 });
 $('.configurator-renderer input.test').show();
-$('.configurator-renderer input.test').spectrum("setWithChannels", "rgbkwaui(50,50,50,6000,50,50,50,50)");
+$('.configurator-renderer input.test').spectrum("setWithChannels", "hsvkwaui(360,50,50,6500,50,50,50,50)");
 $('.configurator-renderer input.test').on('move.spectrum', function (e, colorSpace) {
     console.info(colorSpace);
 })
