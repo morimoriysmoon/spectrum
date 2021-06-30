@@ -27,6 +27,7 @@ $('.configurator-renderer input.test').spectrum({
     allowEmpty: false,
     showAlpha: false,
     showButtons: false,
+    showInput: true,
     move: function(args) {
         // console.info(args[0]);
         // console.info(args[1]);

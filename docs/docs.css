@@ -237,3 +237,6 @@ input {
   width: 80px;
   height: 80px;
 }
+.sp-container.sp-dark .sp-input-container {
+  background-color: white;
+}
