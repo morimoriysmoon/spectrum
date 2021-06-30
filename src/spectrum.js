@@ -849,7 +849,7 @@
                     move();
                     updateOriginalInput();
                 } catch (error) {
-                    console.error(error);
+                    // console.error(error);
                     textInput.addClass("sp-validation-error");
                 }
             }
@@ -1461,7 +1461,7 @@
                     updateOriginalInput();
                 } catch(error) {
                     // ignore
-                    console.error(error);
+                    // console.error(error);
                 }
             },
             get: get,
