@@ -1056,7 +1056,10 @@
             // update channels first
             if (channels && channels.length > 0) {
                 for (var idx = 0 ; idx < channels.length ; idx++) {
-                    setValueOfChannel(channels.charAt(idx), parseFloat(values[3 + idx]));
+                    // check if channel is supported
+                    if (formatWithChannels.indexOf(channels.charAt(idx)) > -1) {
+                        setValueOfChannel(channels.charAt(idx), parseFloat(values[3 + idx]));
+                    }
                 }
             }
 
